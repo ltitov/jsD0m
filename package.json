@@ -1,0 +1,16 @@
+{
+  "name": "jsd0m",
+  "version": "1.0.0",
+  "description": "scape goszakupki link",
+  "main": "goszakupki.js",
+  "dependencies": {
+    "got": "^11.8.2",
+    "jsdom": "^16.5.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
