@@ -36,14 +36,27 @@ got(GoszakupkiURLBuilder).then(response => {
   const eventsElements = eventsChildrenElement.querySelectorAll('tr');
 
   eventsElements.forEach(even => {
-    const eventUrl = even.querySelector('td:nth-child(2)').textContent;
-    console.log(eventUrl)
-  });
+    const linkEvent = even.querySelector('.word-break').querySelector('a').getAttribute('href')
+    const eventLink = ('https://goszakupki.by' + linkEvent)
 
-  // console.log(dom.window.document.querySelector('tbody').textContent);
-}).catch(err => {
-  console.log(err);
+    got(eventLink).then(eventPageData => {
+      const eventPageDom = new JSDOM(eventPageData.body.toString()).window.document;
+      let eventData = {};
+      eventData.title = eventPageDom.querySelector('h1').textContent;
+      eventData.organization = eventPageDom.querySelector("body > div.wrap > div > div:nth-child(4) > table > tbody > tr:nth-child(1) > td").textContent;
+      eventData.working = eventPageDom.querySelector("body > div.wrap > div > div:nth-child(3) > table > tbody > tr:nth-child(2) > td").textContent;
+      eventData.price = eventPageDom.querySelector("body > div.wrap > div > div:nth-child(5) > table > tbody > tr:nth-child(3) > td").textContent;
+      eventData.date = eventPageDom.querySelector("body > div.wrap > div > div:nth-child(5) > table > tbody > tr:nth-child(2) > td").textContent;
+
+      console.log(eventData)
+    })
+
+  })
 });
+
+
+
+
 
 // got(IcetradeURLBuilder).then(response => {
 //   const dom = new JSDOM(response.body);
