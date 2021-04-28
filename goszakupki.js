@@ -5,25 +5,6 @@ GoszakupkiURLBuilder.searchParams.set('TendersSearch[status][]', 'Submission');
 GoszakupkiURLBuilder.searchParams.set('TendersSearch[region][]', '1');
 GoszakupkiURLBuilder.searchParams.set('page', '1');
 
-// const IcetradeURLBuilder = new URL('https://icetrade.by/search/auctions');
-
-// IcetradeURLBuilder.searchParams.set('search_text', 'ремонт');
-// IcetradeURLBuilder.searchParams.set('zakup_type[1]', '1');
-// IcetradeURLBuilder.searchParams.set('zakup_type[2]', '1');
-// IcetradeURLBuilder.searchParams.set('establishment', '0');
-// IcetradeURLBuilder.searchParams.set('t[Trade]', '1');
-// IcetradeURLBuilder.searchParams.set('t[eTrade]', '1');
-// IcetradeURLBuilder.searchParams.set('t[socialOrder]', '1');
-// IcetradeURLBuilder.searchParams.set('t[singleSource]', '1');
-// IcetradeURLBuilder.searchParams.set('t[Auction]', '1');
-// IcetradeURLBuilder.searchParams.set('t[Request]', '1');
-// IcetradeURLBuilder.searchParams.set('t[contractingTrades]', '1');
-// IcetradeURLBuilder.searchParams.set('t[negotiations]', '1');
-// IcetradeURLBuilder.searchParams.set('t[Other]', '1');
-// IcetradeURLBuilder.searchParams.set('r[1]', '1');
-// IcetradeURLBuilder.searchParams.set('sort', 'date:desc');
-// IcetradeURLBuilder.searchParams.set('sbm', '1');
-// IcetradeURLBuilder.searchParams.set('onPage', '100');
 
 const got = require('got');
 const jsdom = require("jsdom");
@@ -31,36 +12,21 @@ const { JSDOM } = jsdom;
 
 got(GoszakupkiURLBuilder).then(response => {
   const eventsPageDom = new JSDOM(response.body.toString()).window.document;
-  const eventsParentsElement = eventsPageDom.querySelector('.table');
-  const eventsChildrenElement = eventsParentsElement.querySelector('tbody');
-  const eventsElements = eventsChildrenElement.querySelectorAll('tr');
+  const eventsElement = eventsPageDom.querySelectorAll("#w0 > table > tbody > tr");
 
-  eventsElements.forEach(even => {
+  eventsElement.forEach(even => {
     const linkEvent = even.querySelector('.word-break').querySelector('a').getAttribute('href')
-    const eventLink = ('https://goszakupki.by' + linkEvent)
 
-    got(eventLink).then(eventPageData => {
+    got(GoszakupkiURLBuilder.origin + linkEvent).then(eventPageData => {
       const eventPageDom = new JSDOM(eventPageData.body.toString()).window.document;
       let eventData = {};
-      eventData.title = eventPageDom.querySelector('h1').textContent;
+      eventData.title = (eventPageDom.querySelector('h1').textContent).match(/\d+/g);
       eventData.organization = eventPageDom.querySelector("body > div.wrap > div > div:nth-child(4) > table > tbody > tr:nth-child(1) > td").textContent;
       eventData.working = eventPageDom.querySelector("body > div.wrap > div > div:nth-child(3) > table > tbody > tr:nth-child(2) > td").textContent;
       eventData.price = eventPageDom.querySelector("body > div.wrap > div > div:nth-child(5) > table > tbody > tr:nth-child(3) > td").textContent;
       eventData.date = eventPageDom.querySelector("body > div.wrap > div > div:nth-child(5) > table > tbody > tr:nth-child(2) > td").textContent;
-
       console.log(eventData)
     })
 
   })
 });
-
-
-
-
-
-// got(IcetradeURLBuilder).then(response => {
-//   const dom = new JSDOM(response.body);
-//   console.log(dom.window.document.getElementById('auctions-list').textContent);
-// }).catch(err => {
-//   console.log(err);
-// });
